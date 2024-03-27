@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Cadastro</title>
+</head>
+
+<body>
+    <h1>Lista de Cadastro</h1>
+    <br>
+    <table border="5">
+        <tr>
+            <td>ID</td>
+            <td>Nome</td>
+            <td>Teleforne</td>
+            <td>CPF</td>
+            <td>E-mail</td>
+            <td>Excluir</td>
+        </tr> {% for pessoa in pessoas %} <tr>
+            <td> {{pessoa._id}}</td>
+            <td>{{pessoa.nome}}</td>
+            <td>{{pessoa.telefone}}</td>
+            <td>{{pessoa.cpf}}</td>
+            <td>{{pessoa.email}}</td>
+            <td><a href="/excluir/{{pessoa._id}}">X</a></td>
+        </tr> {% endfor %}
+    </table>
+    <button><a href="/index">Voltar</a></button>
+</body>
+
+</html>
