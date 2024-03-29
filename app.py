@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, jsonify, render_template, request, url_for, redirect
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -54,8 +54,8 @@ def index():
 def cadastrar():
     return render_template("cadastro.html")
 
-@app.route("/cadastro", methods=['GET', 'POST'])
-def cadastro():
+@app.route("/pessoa", methods=['GET', 'POST'])
+def cadastro(): 
     if request.method == "POST":
        nome = request.form.get("nome")     
        telefone = request.form.get("telefone")  
@@ -71,10 +71,22 @@ def cadastro():
     return redirect(url_for("index"))
 
 #criação de lista
-@app.route("/lista")
+@app.route("/lista", methods=['GET'])
 def lista():
     pessoas = Pessoa.query.all()
-    return render_template("lista.html", pessoas=pessoas)
+    lista = []
+
+    for p in pessoas:
+        objeto ={
+            "nome": p.nome,
+            "telefone": p.telefone,
+            "cpf": p.cpf,
+            "email": p.email
+        }
+        lista.append(objeto)
+
+        # print(p.nome)
+    return jsonify(lista)
 
 #criação de excluir cliente 
 #assim que for excluindo, a pagina lista vai ser atualiza com a informação excluida.
