@@ -54,21 +54,34 @@ def index():
 def cadastrar():
     return render_template("cadastro.html")
 
-@app.route("/pessoa", methods=['GET', 'POST'])
+#endpoint ou rota para criar
+@app.route("/pessoa", methods=[ 'POST'])
 def cadastro(): 
-    if request.method == "POST":
-       nome = request.form.get("nome")     
-       telefone = request.form.get("telefone")  
-       cpf = request.form.get("cpf")  
-       email = request.form.get("email")  
+    data = request.get_json()
+    print(data)
+    if 'nome' in data and 'telefone' in data and 'cpf' in data and 'email' in data:
+        nome = data['nome']
+        telefone = data['telefone']
+        cpf = data['cpf']
+        email = data['email']
+    else:
+        return "Dados incompletos", 400
 
-#criação de usuario no banco de dados  
+    
+    #criação de usuario no banco de dados  
     if nome and telefone and cpf and email:
         p = Pessoa(nome, telefone, cpf, email)
         db.session.add(p)
         db.session.commit()
+    else:
+        return "Dados invalidos", 400
 
-    return redirect(url_for("index"))
+    return "Dados recebidos com sucesso"
+
+##  DELETAR DEPOIS
+# 1- criar outra funcao de recuperar um unico cliente
+    # pesquisar como se passa um id de um cliente para o flask
+    # usar a mesma linha de raciocionio do /Lista
 
 #criação de lista
 @app.route("/lista", methods=['GET'])
@@ -90,6 +103,10 @@ def lista():
 
 #criação de excluir cliente 
 #assim que for excluindo, a pagina lista vai ser atualiza com a informação excluida.
+# retornar o id no /lista GET
+# Usar método DELETE
+# Usar o postman para deletar
+# verificar se deletou pela lista
 @app.route("/excluir/<int:id>")
 def excluir(id):
     pessoa = Pessoa.query.filter_by(_id=id).first()
