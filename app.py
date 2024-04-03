@@ -35,7 +35,7 @@ class Pessoa(db.Model):
 @app.route("/pessoas", methods=[ 'POST'])
 def cadastro(): 
     data = request.get_json()
-    print(data)
+
     if 'nome' in data and 'telefone' in data and 'cpf' in data and 'email' in data:
         nome = data['nome']
         telefone = data['telefone']
@@ -79,6 +79,9 @@ def lista():
 # rota pra pegar pessoa pelo ID
 @app.route("/pessoas/<int:id>", methods=['GET'])
 def busca_pessoa(id):
+    if id is None:
+        return "Faltando parâmetro", 400
+    
     p = Pessoa.query.get(id)
 
     if p:
@@ -93,8 +96,6 @@ def busca_pessoa(id):
         return jsonify(objeto)
     else:
         return jsonify({"mensagem": "Pessoa não encontrada"})
-
-
 
 # excluir cliente 
 @app.route("/pessoas/<id>", methods=['DELETE'])
