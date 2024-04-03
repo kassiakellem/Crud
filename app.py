@@ -7,7 +7,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 
 db = SQLAlchemy(app)
 
-
 # criação de tabela e colunas (modelo)
 class Pessoa(db.Model):
     __tablename__ = "cliente"
@@ -28,34 +27,12 @@ class Pessoa(db.Model):
         self.telefone = telefone
         self.cpf = cpf
         self.email = email
-    
-#identação é o formato do codigo
-# exemplo em JS: 
-# while(true){
-#     if(True){
-#         break;
-#     }
-# }
-# exemplo em python:
-# while True:
-#     if True:
-#         break
-    
+        
 # RODAR no SHELL /TERMINAL
 # db.create_all()
 
-
-# criação de rotas e função.
-@app.route("/index")
-def index():
-    return render_template("index.html")
-
-@app.route("/cadastrar")
-def cadastrar():
-    return render_template("cadastro.html")
-
 #endpoint ou rota para criar
-@app.route("/pessoa", methods=[ 'POST'])
+@app.route("/pessoas", methods=[ 'POST'])
 def cadastro(): 
     data = request.get_json()
     print(data)
@@ -78,13 +55,9 @@ def cadastro():
 
     return "Dados recebidos com sucesso"
 
-##  DELETAR DEPOIS
-# 1- criar outra funcao de recuperar um unico cliente
-    # pesquisar como se passa um id de um cliente para o flask
-    # usar a mesma linha de raciocionio do /Lista
-
 #criação de lista
-@app.route("/lista", methods=['GET'])
+# retornar o id no /lista GET
+@app.route("/pessoas", methods=['GET'])
 def lista():
     pessoas = Pessoa.query.all()
     lista = []
@@ -94,28 +67,48 @@ def lista():
             "nome": p.nome,
             "telefone": p.telefone,
             "cpf": p.cpf,
-            "email": p.email
+            "email": p.email,
+            "_id": p._id
         }
         lista.append(objeto)
 
         # print(p.nome)
     return jsonify(lista)
 
-#criação de excluir cliente 
-#assim que for excluindo, a pagina lista vai ser atualiza com a informação excluida.
-# retornar o id no /lista GET
-# Usar método DELETE
-# Usar o postman para deletar
-# verificar se deletou pela lista
-@app.route("/excluir/<int:id>")
-def excluir(id):
-    pessoa = Pessoa.query.filter_by(_id=id).first()
- 
-    db.session.delete(pessoa)
-    db.session.commit()
 
-    pessoas = Pessoa.query.all()
-    return render_template("lista.html", pessoas=pessoas)
+# rota pra pegar pessoa pelo ID
+@app.route("/pessoas/<int:id>", methods=['GET'])
+def busca_pessoa(id):
+    p = Pessoa.query.get(id)
+
+    if p:
+        objeto ={
+            "nome": p.nome,
+            "telefone": p.telefone,
+            "cpf": p.cpf,
+            "email": p.email,
+            "_id": p._id
+        }
+       
+        return jsonify(objeto)
+    else:
+        return jsonify({"mensagem": "Pessoa não encontrada"})
+
+
+
+# excluir cliente 
+@app.route("/pessoas/<id>", methods=['DELETE'])
+def api_delete(id):
+    try:
+        remove = Pessoa.query.get(id)
+        if remove is None: 
+            return "item inexistente"
+        db.session.delete(remove)
+        db.session.commit()
+        return jsonify({'sucesso': True})
+    except Exception as e: # como se ver mensagem de erro
+        print('erro', e) #
+        return jsonify({'sucesso': False})
 
 #execução
 if __name__ == "__main__":
