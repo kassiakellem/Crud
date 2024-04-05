@@ -8,7 +8,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 db = SQLAlchemy(app)
 
 # criação de tabela e colunas (modelo)
-class Pessoa(db.Model):
+class People(db.Model):
     __tablename__ = "cliente"
 
     _id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -47,7 +47,7 @@ def cadastro():
     
     #criação de usuario no banco de dados  
     if nome and telefone and cpf and email:
-        p = Pessoa(nome, telefone, cpf, email)
+        p = People(nome, telefone, cpf, email)
         db.session.add(p)
         db.session.commit()
     else:
@@ -59,7 +59,7 @@ def cadastro():
 # retornar o id no /lista GET
 @app.route("/pessoas", methods=['GET'])
 def lista():
-    pessoas = Pessoa.query.all()
+    pessoas = People.query.all()
     lista = []
 
     for p in pessoas:
@@ -82,7 +82,7 @@ def busca_pessoa(id):
     if id is None:
         return "Faltando parâmetro", 400
     
-    p = Pessoa.query.get(id)
+    p = People.query.get(id)
 
     if p:
         objeto ={
@@ -101,7 +101,7 @@ def busca_pessoa(id):
 @app.route("/pessoas/<id>", methods=['DELETE'])
 def api_delete(id):
     try:
-        remove = Pessoa.query.get(id)
+        remove = People.query.get(id)
         if remove is None: 
             return "item inexistente"
         db.session.delete(remove)
